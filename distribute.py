@@ -1,6 +1,7 @@
 #coding=utf-8
 import numpy as np
 import tensorflow as tf
+import time
 
 # Define parameters
 FLAGS = tf.app.flags.FLAGS
@@ -89,7 +90,7 @@ def main(_):
         sess.run(init_token_op)
 
       step = 0
-      while  step < 20:
+      while  step < 5:
         train_x = np.random.randn(1)
         train_y = 2 * train_x + np.random.randn(1) * 0.33  + 10
         _, loss_v, step = sess.run([train_op, loss_value,global_step], feed_dict={input:train_x, label:train_y})
@@ -97,6 +98,7 @@ def main(_):
         #if step % steps_to_validate == 0:
         w,b = sess.run([weight,biase])
         print("step: %d, weight: %f, biase: %f, loss: %f" %(step, w, b, loss_v))
+        time.sleep(10)
 
     sv.stop()
 
