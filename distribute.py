@@ -53,7 +53,7 @@ def main(_):
         #同步模式计算更新梯度
         rep_op = tf.train.SyncReplicasOptimizer(optimizer,
                                                 replicas_to_aggregate=len(worker_hosts),
-                                                replica_id=FLAGS.task_index,
+                                                #replica_id=FLAGS.task_index,
                                                 total_num_replicas=len(worker_hosts),
                                                 use_locking=True)
         train_op = rep_op.apply_gradients(grads_and_vars, global_step=global_step)
