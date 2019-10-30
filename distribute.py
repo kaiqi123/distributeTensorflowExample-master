@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_string("worker_hosts", "",
                            "Comma-separated list of hostname:port pairs")
 tf.app.flags.DEFINE_string("job_name", "", "One of 'ps', 'worker'")
 tf.app.flags.DEFINE_integer("task_index", 0, "Index of task within the job")
-tf.app.flags.DEFINE_integer("issync", 0, "是否采用分布式的同步模式，1表示同步模式，0表示异步模式")
+tf.app.flags.DEFINE_integer("issync", 1, "是否采用分布式的同步模式，1表示同步模式，0表示异步模式")
 
 # Hyperparameters
 learning_rate = FLAGS.learning_rate
@@ -78,10 +78,6 @@ def main(_):
                             saver=saver,
                             global_step=global_step,
                             save_model_secs=60)
-
-    # sv = tf.train.MonitoredTrainingSession(is_chief=(FLAGS.task_index == 0),
-    #                                        checkpoint_dir="./checkpoint/",
-    #                                        save_checkpoint_secs=60)
 
     with sv.prepare_or_wait_for_session(server.target) as sess:
       # 如果是同步模式
