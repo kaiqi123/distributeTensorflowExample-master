@@ -71,17 +71,17 @@ def main(_):
       tf.summary.scalar('cost', loss_value)
       summary_op = tf.summary.merge_all()
  
-    sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
-                            logdir="./checkpoint/",
-                            init_op=init_op,
-                            summary_op=None,
-                            saver=saver,
-                            global_step=global_step,
-                            save_model_secs=60)
+    # sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
+    #                         logdir="./checkpoint/",
+    #                         init_op=init_op,
+    #                         summary_op=None,
+    #                         saver=saver,
+    #                         global_step=global_step,
+    #                         save_model_secs=60)
 
-    # sv = tf.train.MonitoredTrainingSession(is_chief=(FLAGS.task_index == 0),
-    #                                        checkpoint_dir="./checkpoint/",
-    #                                        save_checkpoint_secs=60)
+    sv = tf.train.MonitoredTrainingSession(is_chief=(FLAGS.task_index == 0),
+                                           checkpoint_dir="./checkpoint/",
+                                           save_checkpoint_secs=60)
 
     with sv.prepare_or_wait_for_session(server.target) as sess:
       # 如果是同步模式
