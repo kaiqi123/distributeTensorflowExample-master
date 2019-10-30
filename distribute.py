@@ -34,6 +34,7 @@ def main(_):
     with tf.device(tf.train.replica_device_setter(
                     worker_device="/job:worker/task:%d" % FLAGS.task_index,
                     cluster=cluster)):
+
       global_step = tf.Variable(0, name='global_step', trainable=False)
 
       input = tf.placeholder("float")
@@ -50,14 +51,11 @@ def main(_):
       if issync == 1:
         #同步模式计算更新梯度
         rep_op = tf.train.SyncReplicasOptimizer(optimizer,
-                                                replicas_to_aggregate=len(
-                                                  worker_hosts),
+                                                replicas_to_aggregate=len(worker_hosts),
                                                 replica_id=FLAGS.task_index,
-                                                total_num_replicas=len(
-                                                  worker_hosts),
+                                                total_num_replicas=len(worker_hosts),
                                                 use_locking=True)
-        train_op = rep_op.apply_gradients(grads_and_vars,
-                                       global_step=global_step)
+        train_op = rep_op.apply_gradients(grads_and_vars, global_step=global_step)
         init_token_op = rep_op.get_init_tokens_op()
         chief_queue_runner = rep_op.get_chief_queue_runner()
       else:
@@ -85,14 +83,16 @@ def main(_):
       if FLAGS.task_index == 0 and issync == 1:
         sv.start_queue_runners(sess, [chief_queue_runner])
         sess.run(init_token_op)
+
       step = 0
-      while  step < 1000000:
+      while  step < 5:
         train_x = np.random.randn(1)
         train_y = 2 * train_x + np.random.randn(1) * 0.33  + 10
         _, loss_v, step = sess.run([train_op, loss_value,global_step], feed_dict={input:train_x, label:train_y})
-        if step % steps_to_validate == 0:
-          w,b = sess.run([weight,biase])
-          print("step: %d, weight: %f, biase: %f, loss: %f" %(step, w, b, loss_v))
+
+        #if step % steps_to_validate == 0:
+        w,b = sess.run([weight,biase])
+        print("step: %d, weight: %f, biase: %f, loss: %f" %(step, w, b, loss_v))
 
     sv.stop()
 
