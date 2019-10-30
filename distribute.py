@@ -78,6 +78,10 @@ def main(_):
                             global_step=global_step,
                             save_model_secs=60)
 
+    # sv = tf.train.MonitoredTrainingSession(is_chief=(FLAGS.task_index == 0),
+    #                                        checkpoint_dir="./checkpoint/",
+    #                                        save_checkpoint_secs=60)
+
     with sv.prepare_or_wait_for_session(server.target) as sess:
       # 如果是同步模式
       if FLAGS.task_index == 0 and issync == 1:
