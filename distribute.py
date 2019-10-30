@@ -89,7 +89,7 @@ def main(_):
         sess.run(init_token_op)
 
       step = 0
-      while  step < 5:
+      while  step < 20:
         train_x = np.random.randn(1)
         train_y = 2 * train_x + np.random.randn(1) * 0.33  + 10
         _, loss_v, step = sess.run([train_op, loss_value,global_step], feed_dict={input:train_x, label:train_y})
