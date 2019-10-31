@@ -79,6 +79,7 @@ def main(_):
                             global_step=global_step,
                             save_model_secs=60)
 
+    print(server.target)
     with sv.prepare_or_wait_for_session(server.target) as sess:
       # 如果是同步模式
       if FLAGS.task_index == 0 and issync == 1:
