@@ -71,31 +71,31 @@ def main(_):
       tf.summary.scalar('cost', loss_value)
       summary_op = tf.summary.merge_all()
  
-      sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
-                                logdir="./checkpoint/",
-                                init_op=init_op,
-                                summary_op=None,
-                                saver=saver,
-                                global_step=global_step,
-                                save_model_secs=60)
+    sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
+                            logdir="./checkpoint/",
+                            init_op=init_op,
+                            summary_op=None,
+                            saver=saver,
+                            global_step=global_step,
+                            save_model_secs=60)
 
-      print(server.target)
-      with sv.prepare_or_wait_for_session(server.target) as sess:
-        # 如果是同步模式
-        if FLAGS.task_index == 0 and issync == 1:
-            sv.start_queue_runners(sess, [chief_queue_runner])
-            sess.run(init_token_op)
+    print(server.target)
+    with sv.prepare_or_wait_for_session(server.target) as sess:
+      # 如果是同步模式
+      if FLAGS.task_index == 0 and issync == 1:
+        sv.start_queue_runners(sess, [chief_queue_runner])
+        sess.run(init_token_op)
 
-        step = 0
-        while step < 40:
-            train_x = np.random.randn(1)
-            train_y = 2 * train_x + np.random.randn(1) * 0.33  + 10
-            _, loss_v, step = sess.run([train_op, loss_value,global_step], feed_dict={input:train_x, label:train_y})
+      step = 0
+      while step < 100:
+        train_x = np.random.randn(1)
+        train_y = 2 * train_x + np.random.randn(1) * 0.33  + 10
+        _, loss_v, step = sess.run([train_op, loss_value,global_step], feed_dict={input:train_x, label:train_y})
 
-            #if step % steps_to_validate == 0:
-            w,b = sess.run([weight,biase])
-            print("step: %d, weight: %f, biase: %f, loss: %f" %(step, w, b, loss_v))
-            time.sleep(10)
+        #if step % steps_to_validate == 0:
+        w,b = sess.run([weight,biase])
+        print("step: %d, weight: %f, biase: %f, loss: %f" %(step, w, b, loss_v))
+        time.sleep(10)
 
     sv.stop()
 
